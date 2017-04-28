@@ -130,12 +130,12 @@ export default {
       const rtng = this.nsfw ? 'r' : 'pg';
       if (this.search !== '') {
         // const query = this.search.split(' ').join('+');
-        this.url = 'http://api.giphy.com/v1/' + this.category + '/search?q=' + this.search + '&limit=' + this.limit + '&offset=' + this.offset + '&rating=' + rtng + '&api_key=dc6zaTOxFJmzC';
+        this.url = 'https://api.giphy.com/v1/' + this.category + '/search?q=' + this.search + '&limit=' + this.limit + '&offset=' + this.offset + '&rating=' + rtng + '&api_key=dc6zaTOxFJmzC';
       } else {
         this.endpoing = 'trending';
         this.search = '';
         this.query = '';
-        this.url = 'http://api.giphy.com/v1/' + this.category + '/trending?limit=' + this.limit + '&offset=' + this.offset + '&rating=' + rtng + '&api_key=dc6zaTOxFJmzC';
+        this.url = 'https://api.giphy.com/v1/' + this.category + '/trending?limit=' + this.limit + '&offset=' + this.offset + '&rating=' + rtng + '&api_key=dc6zaTOxFJmzC';
       }
     },
     fetchData(url) {
