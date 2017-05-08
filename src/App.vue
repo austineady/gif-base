@@ -28,19 +28,13 @@ export default {
     color: #2c3e50;
   }
 
-  .container {
-    width: 80%;
-    max-width: 2000px;
-    margin: 0 auto;
-  }
-
   footer {
     height: 60px;
     line-height: 60px;
     text-align: right;
     background-color: $green;
     color: white;
-    font-size: 16px;
+    font-size: 1.6rem;
     font-family: 'Roboto';
     font-weight: 300;
     padding: 0 50px;
@@ -51,6 +45,12 @@ export default {
       &:hover {
         color: darken(white, 10%);
       }
+    }
+
+    @media screen and (max-width: 499px) {
+      text-align: center;
+      height: 40px;
+      line-height: 40px;
     }
   }
 </style>

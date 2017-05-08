@@ -1,6 +1,5 @@
 <template>
-  <div @click="copyUrl(gif)" :id="gif.id" class="grid-item" :class="{ playing: playing, copying: copying }">
-    <input type="text" :data-id="gif.id" :value="gif.images.downsized.url" />
+  <div @click="playAnimation()" :id="gif.id" class="gif" :data-clipboard-text="gif.images.downsized.url" :class="{ playing: playing, copying: copying }">
     <img :src="imageSrc" alt="" />
   </div>
 </template>
@@ -17,15 +16,6 @@ export default {
       copying: false,
     };
   },
-  created() {
-    this.imageSrc = this.gif.images.fixed_width_still.url;
-    this.image.onload = () => {
-      this.imageSrc = this.image.src;
-      this.playing = true;
-      this.$emit('layout');
-    };
-    this.image.src = this.gif.images.fixed_width.url;
-  },
   watch: {
     offset(offset) {
       const isShown = this.$el.offsetTop + this.$el.clientHeight > offset;
@@ -33,11 +23,9 @@ export default {
       if (isVisible && isShown) {
         this.imageSrc = this.image.src;
         this.playing = true;
-        this.$emit('layout');
       } else if (!isShown || !isVisible) {
         this.imageSrc = this.gif.images.fixed_width_still.url;
         this.playing = false;
-        this.$emit('layout');
       }
     },
   },
@@ -55,6 +43,20 @@ export default {
         }, 2000);
       }
     },
+    playAnimation() {
+      this.copying = true;
+      window.setTimeout(() => {
+        this.copying = false;
+      }, 2000);
+    },
+  },
+  created() {
+    this.imageSrc = this.gif.images.fixed_width_still.url;
+    this.image.onload = () => {
+      this.imageSrc = this.image.src;
+      this.playing = true;
+    };
+    this.image.src = this.gif.images.fixed_width.url;
   },
 };
 </script>
@@ -63,12 +65,13 @@ export default {
 <style lang="scss">
 @import '../global.scss';
 
-.grid-item {
+.gif {
   cursor: pointer;
-  margin: 5px;
+  margin: 2.5px;
   position: relative;
   width: 300px;
   z-index: 3;
+  //box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
 
   img {
     width: 100%;

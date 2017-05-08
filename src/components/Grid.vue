@@ -5,45 +5,56 @@
 </template>
 
 <script>
-import * as Masonry from 'masonry-layout/masonry';
+import Clipboard from 'clipboard';
+import Masonry from 'masonry-layout';
 import Gif from './Gif';
 
 export default {
   name: 'grid',
+  components: {
+    gif: Gif,
+  },
   props: ['gifs', 'short', 'history', 'store'],
   data() {
     return {
-      el: null,
       offset: 0,
+      backToTop: false,
     };
-  },
-  mounted() {
-    window.setTimeout(this.layout, 500);
-    window.addEventListener('scroll', () => {
-      this.offset = window.pageYOffset;
-    });
-    window.addEventListener('resize', () => {
-      this.offset = window.pageYOffset;
-    });
-  },
-  updated() {
-    window.setTimeout(this.layout, 500);
   },
   methods: {
     layout() {
-      this.el = new Masonry(document.querySelector('#grid'), {
-        itemSelector: '.grid-item',
-        columnWidth: 310,
-      });
-      this.el.layout();
-      this.el.reloadItems();
+      if (this.masonry) {
+        this.masonry.reloadItems();
+        this.masonry.layout();
+      }
     },
     gifClick(gif) {
       this.$emit('gifClicked', gif);
     },
+    bindEvents() {
+      console.log(this.$el.children);
+      window.addEventListener('scroll', () => {
+        this.offset = window.pageYOffset;
+      });
+      window.addEventListener('resize', () => {
+        this.offset = window.pageYOffset;
+      });
+    },
   },
-  components: {
-    gif: Gif,
+  mounted() {
+    this.masonry = new Masonry(this.$el, {
+      itemSelector: '.gif',
+      columnWidth: 310,
+      fitWidth: true,
+    });
+    window.setTimeout(this.layout, 300);
+
+    const clipboard = new Clipboard('.gif');
+
+    this.bindEvents();
+  },
+  updated() {
+    window.setTimeout(this.layout, 300);
   },
 };
 </script>
@@ -53,7 +64,6 @@ export default {
 @import '../global.scss';
 
 #grid {
-  width: 80%;
   max-width: 2000px;
   margin: 10px auto 30px;
 }

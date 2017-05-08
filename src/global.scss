@@ -1,16 +1,22 @@
-$green: #45b29d;
-$blue: #334d5c;
-$blue-light: #5c6bc0;
-$yellow: #efc94c;
-$orange: #e27a3f;
-$red: #df5a49;
-$pink: #ef5350;
-$grey: #e0e0e0;
+$green:           #45b29d;
+$green-light:     #7cfee5;
+$blue:            #334d5c;
+$blue-light:      #5c6bc0;
+$blue-dark:       #3f51b5;
+$yellow:          #efc94c;
+$orange:          #e27a3f;
+$red:             #df5a49;
+$pink:            #ef5350;
+$grey:            #e0e0e0;
 
 .container {
   width: 80%;
   max-width: 2000px;
   margin: 0 auto;
+
+  @media screen and (max-width: 499px) {
+    width: 100%;
+  }
 }
 
 #grid.container.short {
@@ -20,4 +26,22 @@ $grey: #e0e0e0;
 
 .h-right {
   float: right;
+}
+
+html {
+  font-family: 'Roboto';
+  font-size: 10px;
+  background-color: #fafafa;
+
+  @media screen and (max-width: 899px) {
+    font-size: 9px;
+  }
+
+  @media screen and (max-width: 499px) {
+    font-size: 8px;
+  }
+}
+
+#app {
+  overflow: hidden;
 }
