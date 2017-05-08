@@ -1,45 +1,45 @@
 <template>
   <main>
-    <nav>
-      <div class="container">
-        <h1 @click="trendingClick">GifBase</h1>
-        <ul>
-          <li v-show="category === 'stickers'" @click="gifsClick">Gifs</li>
-          <li v-show="category === 'gifs'" @click="stickersClick">Stickers</li>
-          <li v-show="search !== ''" @click="trendingClick">Trending</li>
-        </ul>
-        <div class="input-bg">
-          <i class="fa fa-search"></i>
-          <input id="search" type="search" v-model="search" name="search" placeholder="Type in keywords to search"/>
+    <div id="page">
+      <nav>
+        <div class="container">
+          <h1 @click="trendingClick">GifBase</h1>
+          <ul>
+            <li v-show="category === 'stickers'" @click="gifsClick">Gifs</li>
+            <li v-show="category === 'gifs'" @click="stickersClick">Stickers</li>
+            <li v-show="search !== ''" @click="trendingClick">Trending</li>
+          </ul>
+          <div class="input-bg">
+            <i class="fa fa-search"></i>
+            <input id="search" type="search" v-model="search" name="search" placeholder="Type in keywords to search"/>
+          </div>
         </div>
-      </div>
-    </nav>
-    <section>
-      <div class="container">
-<!--         <ul class="emotion-list">
-  <li v-for="emotion in emotions" :class="emotion.color" @click="handleEmotion(emotion.name)">{{ emotion.name }}</li>
-</ul> -->
-        <div class="h-right">
-          <input type="checkbox" id="one" value="!nsfw" v-model="nsfw">
-          <label for="one">NSFW</label>
+      </nav>
+      <section>
+        <div class="container">
+  <!--         <ul class="emotion-list">
+    <li v-for="emotion in emotions" :class="emotion.color" @click="handleEmotion(emotion.name)">{{ emotion.name }}</li>
+  </ul> -->
+          <div class="h-right">
+            <input type="checkbox" id="one" value="!nsfw" v-model="nsfw">
+            <label for="one">NSFW</label>
+          </div>
         </div>
+      </section>
+      <grid :gifs="gifs" :history="historyList" :store="canStore"></grid>
+      <div class="container h-center">
+        <button v-if="offset >= limit" @click="offset -= limit">Previous Page</button>
+        <button v-else class="disabled">Previous Page</button>
+        <button @click="offset += limit">Next Page</button>
       </div>
-    </section>
-    <!-- <div class="container" v-if="search == ''">
-      <h4><i class="fa fa-line-chart" aria-hidden="true"></i> Trending</h4>
-    </div> -->
-    <grid :gifs="gifs"></grid>
-    <div class="container h-center">
-      <!-- <button v-if="endpoint === 'trending'" @click="offset += limit">More</button> -->
-      <button v-if="offset >= limit" @click="offset -= limit">Previous Page</button>
-      <button v-else class="disabled">Previous Page</button>
-      <button @click="offset += limit">Next Page</button>
     </div>
+    <history :data="historyList"></history>
   </main>
 </template>
 
 <script>
 import Grid from './Grid';
+import History from './History';
 import cache from '../cache';
 import emotions from '../../static/emotions';
 
@@ -58,8 +58,19 @@ export default {
       pageNum: 1,
       nsfw: false,
       cacheStore: cache,
+      historyList: [],
+      canStore: false,
       emotions,
     };
+  },
+  created() {
+    if (this.storageAvailable('localStorage')) {
+      this.canStore = true;
+
+      if (localStorage.getItem('gifshistory')) {
+        this.history = localStorage.getItem('gifshistory');
+      }
+    }
   },
   mounted() {
     document.getElementById('search').select();
@@ -67,6 +78,9 @@ export default {
     if (this.$route.query !== undefined) {
       this.search = this.$route.query.q !== undefined ? this.$route.query.q : '';
     }
+  },
+  beforeUpdate() {
+    document.getElementById('history').style.height = document.getElementById('grid').style.height;
   },
   watch: {
     search() {
@@ -189,9 +203,27 @@ export default {
       this.pageNum = 1;
       this.offset = 0;
     },
+    gifClicked(gif) {
+      this.historyList.push(gif);
+      if (this.canStore) {
+        localStorage.setItem('gifshistory', this.historyList);
+      }
+    },
+    storageAvailable(type) {
+      try {
+        const storage = window[type];
+        const x = '__storage_test__';
+        storage.setItem(x, x);
+        storage.removeItem(x);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
   },
   components: {
     grid: Grid,
+    history: History,
   },
 };
 </script>

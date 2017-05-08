@@ -1,5 +1,5 @@
 <template>
-  <div @click="copyUrl" :id="gif.id" class="grid-item" :class="{ playing: playing, copying: copying }">
+  <div @click="copyUrl(gif)" :id="gif.id" class="grid-item" :class="{ playing: playing, copying: copying }">
     <input type="text" :data-id="gif.id" :value="gif.images.downsized.url" />
     <img :src="imageSrc" alt="" />
   </div>
@@ -8,7 +8,7 @@
 <script>
 export default {
   name: 'gif',
-  props: ['gif', 'offset'],
+  props: ['gif', 'offset', 'history'],
   data() {
     return {
       imageSrc: '',
@@ -42,12 +42,14 @@ export default {
     },
   },
   methods: {
-    copyUrl() {
+    copyUrl(gif) {
       const el = document.querySelectorAll('[data-id="' + this.$el.id + '"]')[0];
       el.select();
       const res = document.execCommand('copy');
       if (res === true) {
         this.copying = true;
+        this.history.push(gif);
+        window.localStorage.gifshistory = this.history;
         window.setTimeout(() => {
           this.copying = false;
         }, 2000);

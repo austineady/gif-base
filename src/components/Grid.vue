@@ -1,6 +1,6 @@
 <template>
-  <div id="grid" class="container" v-if="gifs">
-    <gif :key="gif.id" v-for="gif in gifs" :gif="gif" :offset="offset"></gif>
+  <div id="grid" class="container" v-if="gifs" :class="history.length > 0 ? 'short' : ''">
+    <gif :key="gif.id" v-for="gif in gifs" :gif="gif" :offset="offset" :history="history" :store="store"></gif>
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import Gif from './Gif';
 
 export default {
   name: 'grid',
-  props: ['gifs'],
+  props: ['gifs', 'short', 'history', 'store'],
   data() {
     return {
       el: null,
@@ -37,6 +37,9 @@ export default {
       });
       this.el.layout();
       this.el.reloadItems();
+    },
+    gifClick(gif) {
+      this.$emit('gifClicked', gif);
     },
   },
   components: {
