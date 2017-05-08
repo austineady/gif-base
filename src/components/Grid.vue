@@ -1,6 +1,6 @@
 <template>
   <div id="grid" class="container" v-if="gifs" :class="history.length > 0 ? 'short' : ''">
-    <gif :key="gif.id" v-for="gif in gifs" :gif="gif" :offset="offset" :history="history" :store="store"></gif>
+    <gif :key="gif.id" v-for="gif in gifs" :gif="gif" :offset="offset" :history="history" :store="store" :theme="theme"></gif>
   </div>
 </template>
 
@@ -14,12 +14,19 @@ export default {
   components: {
     gif: Gif,
   },
-  props: ['gifs', 'short', 'history', 'store'],
+  props: ['gifs', 'short', 'history', 'store', 'theme', 'clear'],
   data() {
     return {
       offset: 0,
       backToTop: false,
     };
+  },
+  watch: {
+    clear() {
+      if (this.clear) {
+        this.gifs = this.gifs.slice(0);
+      }
+    },
   },
   methods: {
     layout() {
@@ -44,7 +51,7 @@ export default {
   mounted() {
     this.masonry = new Masonry(this.$el, {
       itemSelector: '.gif',
-      columnWidth: 310,
+      columnWidth: this.theme === 'list' ? 310 : 155,
       fitWidth: true,
     });
     window.setTimeout(this.layout, 300);

@@ -31,6 +31,10 @@
 
       <section class="settings" v-if="settingsActive && isOnMobile">
         <div class="container">
+          <div class="h-left">
+            <i class="fa fa-list" :class="theme === 'list' ? 'active' : ''" @click="theme = 'list'"></i> <i class="fa fa-th" :class="theme === 'grid' ? 'active' : ''" @click="theme = 'grid'"></i>
+          </div>
+
           <div class="h-right">
             <input type="checkbox" id="nsfw-input" value="!nsfw" v-model="nsfw" @click="buildUrl">
             <label for="nsfw-input">NSFW</label>
@@ -46,7 +50,7 @@
         <input id="search" type="search" v-model="search" name="search" placeholder="Type in keywords to search"/>
       </section>
 
-      <grid :gifs="gifs" :history="historyList" :store="canStore"></grid>
+      <grid :gifs="gifs" :history="historyList" :store="canStore" :theme="theme" :clear="clearGifs"></grid>
       <div class="container h-center">
         <button v-if="offset >= limit" @click="offset -= limit">Previous Page</button>
         <button v-else class="disabled">Previous Page</button>
@@ -92,6 +96,8 @@ export default {
       settingsActive: false,
       isOnMobile: true,
       isBelowNav: false,
+      theme: 'grid',
+      clearGifs: false,
       // isOnMobile: window.isOnMobile,
     };
   },
@@ -175,6 +181,9 @@ export default {
     },
     limit() {
       this.buildUrl();
+    },
+    theme() {
+      this.clearGifs = true;
     },
     $route: 'handlePage',
   },
@@ -278,15 +287,30 @@ export default {
 <style lang="scss">
 @import '../global.scss';
 
+.settings {
+  i {
+    font-size: 3rem;
+    margin: 0 30px 0 5px;
+    line-height: 30px;
+    color: white;
+    cursor: pointer;
+
+    &.active {
+      border-bottom: 3px solid $yellow;
+    }
+  }
+}
+
 div.scroll-to-top {
   background-color: darken($green, 5%);
   border-radius: 100%;
-  bottom: 15px;
+  top: 15px;
   box-shadow: 0 1px 1.5px 0 rgba(0,0,0,.12), 0 1px 1px 0 rgba(0,0,0,.24);
   color: white;
   font-size: 1.8rem;
   height: 60px;
-  left: 15px;
+  left: 50%;
+  transform: translateX(-50%);
   position: fixed;
   text-align: center;
   text-shadow: 0 0 4px rgba(0, 0, 0, .4);
@@ -305,26 +329,6 @@ div.scroll-to-top {
     position: relative;
     top: 10px;
   }
-}
-
-.slide-up-enter-active {
-  transition: transform .3s ease-out;
-}
-
-.slide-up-leave-active {
-  transition: transform .3s ease-in;
-}
-
-.slide-up-enter {
-  transform: translateY(100%);
-}
-
-.slide-up-leave {
-  transform: translateY(0);
-}
-
-.slide-up-leave-to {
-  transform: translateY(100%);
 }
 
 section {
