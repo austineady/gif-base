@@ -1,6 +1,6 @@
 <template>
-  <div id="grid" class="container" v-if="gifs" :class="history.length > 0 ? 'short' : ''">
-    <gif :key="gif.id" v-for="gif in gifs" :gif="gif" :offset="offset" :history="history" :store="store" :theme="theme"></gif>
+  <div id="grid" class="container is-fluid grid" v-if="gifs" :class="history.length > 0 ? 'short' : ''">
+    <gif :key="gif.id" v-for="gif in gifs" :gif="gif" :offset="offset" :history="history" :store="store" :theme="theme" v-on:reload="reload"></gif>
   </div>
 </template>
 
@@ -19,6 +19,7 @@ export default {
     return {
       offset: 0,
       backToTop: false,
+      int: null,
     };
   },
   watch: {
@@ -31,15 +32,17 @@ export default {
   methods: {
     layout() {
       if (this.masonry) {
-        this.masonry.reloadItems();
         this.masonry.layout();
       }
+    },
+    reload() {
+      this.masonry.reloadItems();
+      this.masonry.layout();
     },
     gifClick(gif) {
       this.$emit('gifClicked', gif);
     },
     bindEvents() {
-      console.log(this.$el.children);
       window.addEventListener('scroll', () => {
         this.offset = window.pageYOffset;
       });
@@ -47,31 +50,29 @@ export default {
         this.offset = window.pageYOffset;
       });
     },
+    startMasonry() {
+      this.masonry = new Masonry(this.$el, {
+        itemSelector: '.gif',
+        columnWidth: this.theme === 'list' ? 310 : 155,
+        fitWidth: true,
+      });
+      this.int = window.setInterval(this.layout, 1000);
+      setTimeout(() => {
+        window.clearInterval(this.int);
+      }, 20000);
+    },
   },
   mounted() {
-    this.masonry = new Masonry(this.$el, {
-      itemSelector: '.gif',
-      columnWidth: this.theme === 'list' ? 310 : 155,
-      fitWidth: true,
-    });
-    window.setTimeout(this.layout, 300);
-
+    this.startMasonry();
     const clipboard = new Clipboard('.gif');
-
     this.bindEvents();
-  },
-  updated() {
-    window.setTimeout(this.layout, 300);
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss">
-@import '../global.scss';
-
-#grid {
-  max-width: 2000px;
-  margin: 10px auto 30px;
+<style lang="scss" scoped>
+.grid {
+  padding: 1rem;
 }
 </style>

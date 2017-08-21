@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <router-view></router-view>
-    <footer>
-      <div class="container">
+    <footer class="footer">
+      <div class="container has-text-right">
         Powered by <a href="https://giphy.com">Giphy</a>
       </div>
     </footer>
@@ -17,8 +17,8 @@ export default {
 };
 </script>
 
-<style lang="scss" module>
-  @import './global.scss';
+<style lang="scss">
+@import "./global.scss";
 
   #app {
     font-family: 'Avenir', Helvetica, Arial, sans-serif;
@@ -26,31 +26,14 @@ export default {
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+    padding-bottom: 60px;
   }
 
-  footer {
-    height: 60px;
-    line-height: 60px;
-    text-align: right;
-    background-color: $green;
-    color: white;
-    font-size: 1.6rem;
-    font-family: 'Roboto';
-    font-weight: 300;
-    padding: 0 50px;
-
-    a {
-      color: white;
-
-      &:hover {
-        color: darken(white, 10%);
-      }
-    }
-
-    @media screen and (max-width: 499px) {
-      text-align: center;
-      height: 40px;
-      line-height: 40px;
-    }
+  footer.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 1.5rem;
   }
 </style>

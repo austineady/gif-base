@@ -55,6 +55,7 @@ export default {
     this.image.onload = () => {
       this.imageSrc = this.image.src;
       this.playing = true;
+      this.$emit('reload');
     };
     this.image.src = this.gif.images.fixed_width.url;
   },
@@ -63,11 +64,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-@import '../global.scss';
-
 .gif {
   cursor: pointer;
-  margin: 2.5px;
   position: relative;
   width: 300px;
   z-index: 3;
@@ -158,6 +156,14 @@ export default {
       text-align: center;
       transition: color .3s;
       z-index: 1;
+    }
+  }
+
+  &.condense {
+    &::before,
+    &::after {
+      height: 70px;
+      width: 60px;
     }
   }
 }

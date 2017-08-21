@@ -18,8 +18,6 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
-@import '../global.scss';
-
 aside {
   background-color: #e0e0e0;
   bottom: 0;
