@@ -1,30 +1,12 @@
 <template>
   <main class="container">
     <div id="page">
-      <div class="columns">
-        <div class="column is-1">
-          <a class="title is-6 is-hidden-mobile" @click="trendingClick">
-            GifBase
-          </a>
-        </div>
-        <div class="column is-7 is-offset-1">
-          <div class="field">
-            <p class="control is-expanded">
-              <input class="input" id="search" type="search" v-model="search" name="search" placeholder="Type in keywords to search">
-            </p>
-          </div>  
-        </div>  
-        <div class="column is-3">
-          <a class="button is-light" v-show="category === 'stickers'" @click="gifsClick">Gifs</a>
-          <a class="button is-light" v-show="category === 'gifs'" @click="stickersClick">Stickers</a>
-          <a class="button is-light" v-show="search !== ''" @click="trendingClick">Trending</a>
-          <a class="button is-light" v-if="isOnMobile" @click="settingsActive = !settingsActive">
-            <span class="icon">
-              <i class="fa fa-cog"></i>
-            </span>
-          </a>
-        </div>
-      </div><!-- /.columns -->
+      <Nav
+      v-on:search="val => search = val"
+      v-on:trending-click="trendingClick"
+      v-on:stickers-click="stickersClick"
+      v-on:gifs-click="gifsClick"
+      />
 
       <transition name="slide" v-if="!isOnMobile">
         <section class="settings" v-if="settingsActive">
@@ -50,8 +32,7 @@
 
       <grid :gifs="gifs" :history="historyList" :store="canStore" :theme="theme" :clear="clearGifs"></grid>
       <div class="container h-center">
-        <a class="button" v-if="offset >= limit" @click="offset -= limit">Previous Page</a>
-        <a class="button disabled" v-else>Previous Page</a>
+        <a class="button" :disabled="offset >= limit" @click="offset -= limit">Previous Page</a>
         <a class="button" @click="offset += limit">Next Page</a>
       </div>
     </div>
@@ -64,10 +45,17 @@
         <p>TOP</p>
       </div>
     </transition>
+
+    <footer class="footer">
+      <div class="container has-text-right">
+        Powered by <a href="https://giphy.com">Giphy</a>
+      </div>
+    </footer>
   </main>
 </template>
 
 <script>
+import Nav from './Nav';
 import Grid from './Grid';
 import History from './History';
 import cache from '../cache';
@@ -141,7 +129,7 @@ export default {
       }
       this.timeOut = setTimeout(() => {
         this.query = this.search.replace(' ', '+');
-      }, 2000);
+      }, 1000);
     },
     query() {
       const self = this;
@@ -281,10 +269,31 @@ export default {
   components: {
     grid: Grid,
     history: History,
+    Nav,
   },
 };
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+@import "../global.scss";
+
+  #page {
+    padding-bottom: 60px;
+  }
+
+  .scroll-to-top {
+    position: fixed;
+    bottom: 60px;
+    right: 15px;
+    z-index: 100;
+  }
+
+  footer.footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem 1.5rem;
+  }
 </style>
