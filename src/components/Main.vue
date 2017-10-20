@@ -1,50 +1,51 @@
 <template>
-  <main class="container">
-    <div id="page">
-      <Nav
+  <main style="position: relative;">
+    <Nav
       v-on:search="val => search = val"
       v-on:trending-click="trendingClick"
       v-on:stickers-click="stickersClick"
       v-on:gifs-click="gifsClick"
-      />
+    />
+    <div id="page" class="container">
+      <div class="section">
+        <transition name="slide" v-if="!isOnMobile">
+          <section class="settings" v-if="settingsActive">
+            <label class="checkbox">
+              <input type="checkbox" @click="nsfw = !nsfw">
+              NSFW
+            </label>
+          </section>
+        </transition>
 
-      <transition name="slide" v-if="!isOnMobile">
-        <section class="settings" v-if="settingsActive">
-          <label class="checkbox">
-            <input type="checkbox" @click="nsfw = !nsfw">
-            NSFW
-          </label>
+        <section class="settings" v-if="settingsActive && isOnMobile">
+          <div class="container">
+            <div class="h-left">
+              <i class="fa fa-list" :class="theme === 'list' ? 'active' : ''" @click="theme = 'list'"></i> <i class="fa fa-th" :class="theme === 'grid' ? 'active' : ''" @click="theme = 'grid'"></i>
+            </div>
+
+            <div class="h-right">
+              <input type="checkbox" id="nsfw-input" value="!nsfw" v-model="nsfw" @click="buildUrl">
+              <label for="nsfw-input">NSFW</label>
+            </div>
+          </div>
         </section>
-      </transition>
 
-      <section class="settings" v-if="settingsActive && isOnMobile">
-        <div class="container">
-          <div class="h-left">
-            <i class="fa fa-list" :class="theme === 'list' ? 'active' : ''" @click="theme = 'list'"></i> <i class="fa fa-th" :class="theme === 'grid' ? 'active' : ''" @click="theme = 'grid'"></i>
-          </div>
-
-          <div class="h-right">
-            <input type="checkbox" id="nsfw-input" value="!nsfw" v-model="nsfw" @click="buildUrl">
-            <label for="nsfw-input">NSFW</label>
-          </div>
+        <grid :gifs="gifs" :history="historyList" :store="canStore" :theme="theme" :clear="clearGifs"></grid>
+        <div class="container h-center">
+          <a class="button" :disabled="offset >= limit" @click="offset -= limit">Previous Page</a>
+          <a class="button" @click="offset += limit">Next Page</a>
         </div>
-      </section>
 
-      <grid :gifs="gifs" :history="historyList" :store="canStore" :theme="theme" :clear="clearGifs"></grid>
-      <div class="container h-center">
-        <a class="button" :disabled="offset >= limit" @click="offset -= limit">Previous Page</a>
-        <a class="button" @click="offset += limit">Next Page</a>
+        <transition name="slide-up">
+          <div class="scroll-to-top" v-if="isOnMobile && isBelowNav" @click="scrollToTop()">
+            <i class="fa fa-arrow-up"></i>
+            <br />
+            <p>TOP</p>
+          </div>
+        </transition>
       </div>
+      <!-- <history v-if="!isOnMobile" :data="historyList"></history> -->
     </div>
-    <history v-if="!isOnMobile" :data="historyList"></history>
-
-    <transition name="slide-up">
-      <div class="scroll-to-top" v-if="isOnMobile && isBelowNav" @click="scrollToTop()">
-        <i class="fa fa-arrow-up"></i>
-        <br />
-        <p>TOP</p>
-      </div>
-    </transition>
 
     <footer class="footer">
       <div class="container has-text-right">
@@ -282,10 +283,17 @@ export default {
     padding-bottom: 60px;
   }
 
+  .section {
+    position: relative;
+  }
+
   .scroll-to-top {
+    color: #282c34;
+    text-shadow: 0 3px 2px rgba(0, 0, 0, .25);
+    cursor: pointer;
     position: fixed;
-    bottom: 60px;
-    right: 15px;
+    bottom: 70px;
+    right: 30px;
     z-index: 100;
   }
 
