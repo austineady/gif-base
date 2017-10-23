@@ -87,15 +87,21 @@ export default {
 
 .main {
   &__nav {
-    background-color: white;
-    box-shadow: 0 3px 2px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
-    display: block;
-    left: 0;
-    min-height: 52px;
-    position: fixed;
-    right: 0;
-    top: 0;
+    padding-bottom: 15px;
+    position: relative;
     z-index: 10;
+    
+    @media screen and (max-width: 1007px) {
+      background-color: white;
+      box-shadow: 0 3px 2px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+      display: block;
+      left: 0;
+      min-height: 52px;
+      padding-bottom: 0;
+      position: fixed;
+      right: 0;
+      top: 0;
+    }
   }
 
   &__navbar {

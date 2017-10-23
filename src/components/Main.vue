@@ -280,6 +280,14 @@ export default {
 
   .main__page {
     padding-bottom: 60px;
+
+    @media screen and (max-width: 1007px) {
+      padding-top: 50px;
+    }
+    
+    .section {
+      padding-top: 15px;
+    }
   }
 
   .section {
