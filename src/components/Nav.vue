@@ -87,7 +87,15 @@ export default {
 
 .main {
   &__nav {
-    position: relative;
+    background-color: white;
+    box-shadow: 0 3px 2px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+    display: block;
+    left: 0;
+    min-height: 52px;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 10;
   }
 
   &__navbar {
