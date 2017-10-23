@@ -6,7 +6,7 @@
       v-on:stickers-click="stickersClick"
       v-on:gifs-click="gifsClick"
     />
-    <div id="page" class="container">
+    <div id="page" class="container main__page">
       <div class="section">
         <transition name="slide" v-if="!isOnMobile">
           <section class="settings" v-if="settingsActive">
@@ -278,7 +278,7 @@ export default {
 <style lang="scss">
 @import "../global.scss";
 
-  #page {
+  .main__page {
     padding-bottom: 60px;
   }
 

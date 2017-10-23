@@ -1,23 +1,14 @@
 <template>
-  <nav class="navbar">
-    <div class="container">
-      <div class="navbar-brand">
+  <section class="container main__nav">
+    <nav class="navbar main__navbar">
+      <div class="navbar-brand is-hidden-touch">
         <div class="navbar-item">
-          <input class="input navbar-search" id="search" type="text" @input="handleSearch($event.target.value)" name="search" :placeholder="isOnMobile ? 'Search gifs' : 'Type in keywords to search'">
-        </div>
-
-        <div class="navbar-burger burger" data-target="navMenubd-example" @click="menuActive = !menuActive">
-          <span></span>
-          <span></span>
-          <span></span>
+          <span class="font-secondary">GifBase</span>
         </div>
       </div>
 
-      <div id="navMenubd-example" class="navbar-menu" :class="{ 'is-active': menuActive }">
-        <div class="navbar-start">
-          
-        </div>
-
+      <div id="main-menu" class="navbar-menu" :class="{ 'is-active': menuActive }">
+        <div class="navbar-start"></div>
         <div class="navbar-end">
           <div class="navbar-item">
             <a class="navbar-item" v-show="category === 'stickers'" @click="gifsClick">Gifs</a>
@@ -37,8 +28,18 @@
           </div> -->
         </div>
       </div>
+    </nav>
+    <div class="level main__search">
+      <div class="level-item is-flex">
+        <input class="input main__search-input" id="search" type="text" @input="handleSearch($event.target.value)" name="search" :placeholder="isOnMobile ? 'Search gifs' : 'Type in keywords to search'" autofocus>
+        <div class="navbar-burger burger main__search-menu-toggle is-hidden-desktop" :class="{ 'is-active': menuActive }" data-target="main-menu" @click="menuActive = !menuActive">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
     </div>
-  </nav>
+  </section>
 </template>
 
 <script>
@@ -53,7 +54,7 @@ export default {
   },
   computed: {
     isOnMobile() {
-      return window.innerWidth < 500;
+      return window.innerWidth < 400;
     },
     isSearching() {
       return window.location.href.match('search?') !== null;
@@ -77,20 +78,55 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.font-secondary {
+  font-family: 'Montserrat', sans-serif;
+  font-size: 18px;
+  color: #22d0b2;
+  font-weight: 700;
+}
+
+.main {
+  &__nav {
+    position: relative;
+  }
+
+  &__navbar {
+    @media screen and (max-width: 1007px) {
+      padding-top: 52px;
+    }
+  }
+  &__search {
+    padding: 0 15px;
+    padding-right: 0;
+
+    @media screen and (max-width: 1007px) {
+      position: fixed;
+      top: 0;
+      right: 0;
+      left: 0;
+      z-index: 2;
+    }
+  }
+  &__search-input {
+    flex: 1;
+    margin-right: 10px;
+
+    @media screen and (max-width: 1007px) {
+      flex: .9;
+    }
+  }
+  &__search-menu-toggle {
+    min-width: 50px;
+    flex: .1;
+  }
+}
+
 .navbar-brand {
   padding: 0 15px;
-
-  .navbar-burger {
-    min-width: 40px;
-  }
 }
 
 .navbar-menu {
   justify-content: center;
   align-items: center;
-}
-.navbar-search {
-  max-width: 600px;
-  width: 80vw;
 }
 </style>
