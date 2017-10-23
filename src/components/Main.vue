@@ -32,15 +32,14 @@
 
         <grid :gifs="gifs" :history="historyList" :store="canStore" :theme="theme" :clear="clearGifs"></grid>
         <div class="container h-center">
-          <a class="button" :disabled="offset >= limit" @click="offset -= limit">Previous Page</a>
+          <a class="button" :disabled="offset < limit" @click="offset -= limit">Previous Page</a>
           <a class="button" @click="offset += limit">Next Page</a>
         </div>
 
         <transition name="slide-up">
           <div class="scroll-to-top" v-if="isOnMobile && isBelowNav" @click="scrollToTop()">
-            <i class="fa fa-arrow-up"></i>
-            <br />
-            <p>TOP</p>
+            <i class="fa fa-arrow-up scroll-to-top__icon"></i>
+            <p class="scroll-to-top__text">TOP</p>
           </div>
         </transition>
       </div>
@@ -288,20 +287,34 @@ export default {
   }
 
   .scroll-to-top {
-    color: #282c34;
-    text-shadow: 0 3px 2px rgba(0, 0, 0, .25);
-    cursor: pointer;
-    position: fixed;
+    background: #22d0b2;
+    border-radius: 100%;
     bottom: 70px;
+    box-shadow: 0 2px 3px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
+    color: white;
+    cursor: pointer;
+    height: 70px;
+    padding: 10px;
+    position: fixed;
     right: 30px;
+    width: 70px;
     z-index: 100;
+
+    &__icon {
+      display: block;
+    }
+
+    &__text {
+      display: block;
+      margin-top: 5px;
+    }
   }
 
   footer.footer {
-    position: absolute;
     bottom: 0;
     left: 0;
-    right: 0;
     padding: 1rem 1.5rem;
+    position: absolute;
+    right: 0;
   }
 </style>

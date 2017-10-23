@@ -53,7 +53,8 @@ export default {
     startMasonry() {
       this.masonry = new Masonry(this.$el, {
         itemSelector: '.gif',
-        columnWidth: this.theme === 'list' ? 310 : 155,
+        columnWidth: 250,
+        gutter: 5,
         fitWidth: true,
       });
       this.int = window.setInterval(this.layout, 1000);
@@ -74,5 +75,13 @@ export default {
 <style lang="scss" scoped>
 .grid {
   padding: 1rem;
+}
+
+.container {
+  margin: 0 auto;
+
+  @media screen and (max-width: 350px) {
+    margin: 0;
+  }
 }
 </style>

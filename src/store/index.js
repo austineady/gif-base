@@ -1,5 +1,5 @@
-import { EventEmitter } from 'events'
-import Firebase from 'firebase'
+import { EventEmitter } from 'events';
+import Firebase from 'firebase';
 
 // Initialize Firebase
 var config = {
@@ -9,8 +9,8 @@ var config = {
   projectId: "gifapp-d240b",
   storageBucket: "gifapp-d240b.appspot.com",
   messagingSenderId: "975424041306"
-}
-firebase.initializeApp(config)
+};
+firebase.initializeApp(config);
 
 // Set Database Ref
 //const db = new Firebase.database()

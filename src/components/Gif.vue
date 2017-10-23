@@ -67,12 +67,8 @@ export default {
 .gif {
   cursor: pointer;
   position: relative;
-  width: 300px;
+  width: 250px;
   z-index: 3;
-  //box-shadow: 0 2px 2px 0 rgba(0,0,0,.14), 0 3px 1px -2px rgba(0,0,0,.2), 0 1px 5px 0 rgba(0,0,0,.12);
-  // &.condense {
-  //   width: 150px;
-  // }
 
   img {
     width: 100%;
@@ -129,6 +125,7 @@ export default {
     animation-duration: 1.5s;
     animation-fill-mode: both;
     animation-timing-function: ease-out;
+    border-radius: 5px;
     content: '';
     display: block;
     height: 100px;
@@ -137,7 +134,6 @@ export default {
     top: 50%;
     transform: translateX(-50%) translateY(-50%);
     width: 80px;
-    border-radius: 5px;
     z-index: 0;
   }
 
