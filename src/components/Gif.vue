@@ -1,6 +1,6 @@
 <template>
   <div @click="playAnimation()" :id="gif.id" class="gif" :data-clipboard-text="gif.images.downsized.url" :class="{ playing: playing, copying: copying, condense: theme === 'grid' }">
-    <img :src="imageSrc" alt="" />
+    <img :src="imageSrc" :alt="gif.title" />
   </div>
 </template>
 
@@ -58,7 +58,7 @@ export default {
       this.$emit('reload');
     };
     this.image.src = this.gif.images.fixed_width.url;
-  },
+  }
 };
 </script>
 

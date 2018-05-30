@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div id="wrap">
     <router-view></router-view>
   </div>
 </template>
@@ -13,7 +13,7 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
+#wrap {
   font-family: 'Roboto', Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

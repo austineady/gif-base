@@ -1,50 +1,35 @@
 <template>
-  <section class="container main__nav">
-    <nav class="navbar main__navbar">
-      <div class="navbar-brand is-hidden-touch">
-        <div class="navbar-item">
-          <span class="font-secondary">GifBase</span>
-        </div>
+  <nav class="navbar is-primary main__navbar" role="navigation">
+    <div class="navbar-brand is-hidden-touch" style="width: 90%;">
+      <div class="navbar-item">
+        <span class="font-secondary">GifBase</span>
       </div>
 
-      <div id="main-menu" class="navbar-menu" :class="{ 'is-active': menuActive }">
-        <div class="navbar-start"></div>
-        <div class="navbar-end">
-          <div class="navbar-item">
-            <a class="navbar-item" v-show="category === 'stickers'" @click="gifsClick">Gifs</a>
-          </div>
-          <div class="navbar-item">
-            <a class="navbar-item" v-show="category === 'gifs'" @click="stickersClick">Stickers</a>
-          </div>
-          <div class="navbar-item">
-            <a class="navbar-item" v-show="isSearching" @click="trendingClick">Trending</a>
-          </div>
-          <!-- <div class="navbar-item">
-            <a class="navbar-item" v-if="isOnMobile" @click="settingsActive = !settingsActive">
-              <span class="icon">
-                <i class="fa fa-cog"></i>
-              </span>
-            </a>
-          </div> -->
-        </div>
+      <div class="navbar-item" style="flex: 1">
+        <input class="input main__search-input" id="search" type="text" @input="handleSearch($event.target.value)" name="search" :placeholder="isOnMobile ? 'Search gifs' : 'Type in keywords to search'" autofocus role="search">
       </div>
-    </nav>
-    <div class="level main__search">
-      <div class="level-item is-flex">
-        <input class="input main__search-input" id="search" type="text" @input="handleSearch($event.target.value)" name="search" :placeholder="isOnMobile ? 'Search gifs' : 'Type in keywords to search'" autofocus>
-        <div class="navbar-burger burger main__search-menu-toggle is-hidden-desktop" :class="{ 'is-active': menuActive }" data-target="main-menu" @click="menuActive = !menuActive">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
+
+      <div class="navbar-burger burger main__search-menu-toggle is-hidden-desktop" :class="{ 'is-active': menuActive }" data-target="main-menu" @click="menuActive = !menuActive">
+        <span></span>
+        <span></span>
+        <span></span>
       </div>
     </div>
-  </section>
+
+    <div id="main-menu" class="navbar-menu" :class="{ 'is-active': menuActive }">
+      <div class="navbar-start"></div>
+      <div class="navbar-end">
+        <a class="navbar-item" v-show="category === 'stickers'" @click="gifsClick">Gifs</a>
+        <a class="navbar-item" v-show="category === 'gifs'" @click="stickersClick">Stickers</a>
+        <a class="navbar-item" v-show="isSearching" @click="trendingClick">Trending</a>
+      </div>
+    </div>
+  </nav>
 </template>
 
 <script>
 export default {
-  name: 'Nav',
+  name: 'NavMenu',
   data() {
     return {
       category: 'gifs',
@@ -81,13 +66,11 @@ export default {
 .font-secondary {
   font-family: 'Montserrat', sans-serif;
   font-size: 18px;
-  color: #22d0b2;
-  font-weight: 700;
+  color: #fff;
 }
 
 .main {
   &__nav {
-    padding-bottom: 15px;
     position: relative;
     z-index: 10;
     
@@ -133,10 +116,6 @@ export default {
     min-width: 50px;
     flex: .1;
   }
-}
-
-.navbar-brand {
-  padding: 0 15px;
 }
 
 .navbar-menu {
