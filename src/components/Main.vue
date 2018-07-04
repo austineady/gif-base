@@ -1,10 +1,10 @@
 <template>
   <main role="main">
     <NavMenu
-      v-on:search="val => search = val"
-      v-on:trending-click="trendingClick"
-      v-on:stickers-click="stickersClick"
-      v-on:gifs-click="gifsClick"
+      @search="val => search = val"
+      @trending-click="trendingClick"
+      @stickers-click="stickersClick"
+      @gifs-click="gifsClick"
     />
     <div id="page" class="main__page">
       <transition name="slide" v-if="!isOnMobile">
@@ -29,11 +29,13 @@
         </div>
       </section>
 
-      <grid v-if="gifs && gifs.length > 0" :gifs="gifs" :theme="theme" :clear="clearGifs"></grid>
-      <div class="container h-center">
-        <a class="button" :disabled="offset < limit" @click="offset -= limit">Previous Page</a>
-        <a class="button" @click="offset += limit">Next Page</a>
-      </div>
+      <Grid
+        v-if="gifs && gifs.length > 0"
+        :gif-list="gifs"
+        :theme="theme"
+        :clear="clearGifs"
+        @next-page="getNextPage"
+      ></Grid>
 
       <transition name="slide-up">
         <div class="scroll-to-top" v-if="isOnMobile && isBelowNav" @click="scrollToTop()">
@@ -59,6 +61,11 @@ import emotions from '../../static/emotions';
 import ajax from '../ajax';
 
 export default {
+  name: 'Main',
+  components: {
+    Grid,
+    NavMenu,
+  },
   data() {
     return {
       search: '',
@@ -78,28 +85,10 @@ export default {
       isBelowNav: false,
       theme: 'grid',
       clearGifs: false,
-      timeout: null
+      timeout: null,
+      $grid: null,
+      loadingNextPage: false
     };
-  },
-  mounted() {
-    document.getElementById('search').select();
-    this.handlePage();
-    if (this.$route.query !== undefined) {
-      this.search = this.$route.query.q !== undefined ? this.$route.query.q : '';
-    }
-    window.addEventListener('scroll', (e) => {
-      console.log(e);
-      if (!this.backToTop && document.getElementById('grid').offsetTop < window.pageYOffset) {
-        this.isBelowNav = true;
-      } else {
-        this.isBelowNav = false;
-      }
-    });
-  },
-  beforeUpdate() {
-    if (!this.isOnMobile) {
-      document.getElementById('history').style.height = document.getElementById('grid').style.height;
-    }
   },
   watch: {
     search(val) {
@@ -121,32 +110,26 @@ export default {
       this.endpoint = 'search';
       self.$router.push({ path: 'search', query: { q: this.query } });
     },
-    url(url) {
-      this.fetchData(url);
-    },
     offset() {
       if (this.search !== '') {
         this.endpoint = 'search';
       } else {
         this.endpoint = 'trending';
       }
-      const pageCalc = Math.round(this.offset / this.limit);
-      if (pageCalc > 0 && this.query !== '') {
-        this.$router.push({ path: this.endpoint, query: { q: this.query, page: pageCalc } });
-      } else if (pageCalc > 0 && this.query === '') {
-        this.$router.push({ path: this.endpoint, query: { page: pageCalc } });
-      } else if (pageCalc <= 0 && this.query !== '') {
-        this.$router.push({ path: this.endpoint, query: { q: this.query } });
-      } else {
-        this.$router.push({ path: this.endpoint });
-      }
+      // const pageCalc = Math.round(this.gifs.length + this.limit);
+      // if (pageCalc > 0 && this.query !== '') {
+      //   this.$router.push({ path: this.endpoint, query: { q: this.query, total: pageCalc } });
+      // } else if (pageCalc > 0 && this.query === '') {
+      //   this.$router.push({ path: this.endpoint, query: { total: pageCalc } });
+      // } else if (pageCalc <= 0 && this.query !== '') {
+      //   this.$router.push({ path: this.endpoint, query: { q: this.query } });
+      // } else {
+      //   this.$router.push({ path: this.endpoint });
+      // }
     },
     category() {
       this.buildUrl();
       this.resetPage();
-    },
-    limit() {
-      this.buildUrl();
     },
     $route: 'handlePage',
   },
@@ -162,25 +145,27 @@ export default {
     },
     async fetchData(url) {
       const res = await ajax.get(url);
-      this.gifs = res.data;
+      res.data.forEach((gif) => {
+        if (!document.getElementById(gif.id)) {
+          this.gifs.push(gif);
+        }
+      });
     },
-    increaseLimit() {
+    async getNextPage() {
       this.offset += this.limit;
       this.buildUrl();
+      await this.fetchData(this.url);
+      this.loadingNextPage = false;
     },
     resetSearch() {
       this.offset = 0;
       this.limit = 25;
     },
     handlePage() {
+      console.log('handle page');
       if (this.$route.query !== undefined) {
         if (this.$route.query.q !== undefined) {
           this.search = this.$route.query.q !== undefined ? this.$route.query.q : '';
-        }
-        if (this.$route.query.page !== undefined) {
-          this.offset = this.$route.query.page * this.limit;
-        } else {
-          this.offset = 0;
         }
       } else {
         this.$router.push({ path: '/' });
@@ -190,7 +175,7 @@ export default {
     trendingClick() {
       this.search = '';
       this.query = '';
-      this.$router.push({ path: 'trending' });
+      this.$router.push({ path: '/trending' });
     },
     stickersClick() {
       this.category = 'stickers';
@@ -202,18 +187,41 @@ export default {
       this.pageNum = 1;
       this.offset = 0;
     },
-    buildAndReset() {
-      this.buildUrl();
-      this.resetPage();
-    },
     scrollToTop() {
       window.scroll({ top: 0, left: 0, behavior: 'smooth' });
     },
+    startInfiniteScroll() {
+      if (!this.$grid && document.getElementById('grid') !== null) {
+        this.$grid = document.getElementById('grid');
+      }
+      const scrollArea = document.body.parentElement;
+      document.body.onscroll = () => {
+        if (
+          !this.loadingNextPage &&
+          scrollArea.scrollTop + window.innerHeight + 200 > this.$grid.clientHeight
+        ) {
+          this.loadingNextPage = true;
+          // gif list is shorter than page height, get next page automatically
+          this.getNextPage();
+        }
+      };
+    }
   },
-  components: {
-    grid: Grid,
-    NavMenu,
+  created() {
+    this.buildUrl();
+    this.fetchData(this.url);
   },
+  mounted() {
+    if (!this.$grid) this.startInfiniteScroll();
+    document.getElementById('search').select();
+    this.handlePage();
+    if (this.$route.query !== undefined) {
+      this.search = this.$route.query.q !== undefined ? this.$route.query.q : '';
+    }
+  },
+  updated() {
+    if (!this.$grid) this.startInfiniteScroll();
+  }
 };
 </script>
 
@@ -222,8 +230,6 @@ export default {
 @import "../global.scss";
 
   .main__page {
-    height: calc(100vh - 33px - 52px);
-    overflow-y: auto;
     padding: 20px;
 
     .section {

@@ -21,6 +21,5 @@ export default {
   color: #2c3e50;
   position: relative;
   min-width: 320px;
-  overflow: hidden;
 }
 </style>

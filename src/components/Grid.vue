@@ -5,15 +5,17 @@
 <script>
 import Clipboard from 'clipboard';
 import Masonry from 'masonry-layout';
+import debounce from '../debounce';
 
 export default {
   name: 'grid',
-  props: ['gifs', 'short', 'theme', 'clear'],
+  props: ['gifList', 'short', 'theme', 'clear'],
   data() {
     return {
       offset: 0,
       backToTop: false,
       int: null,
+      gifs: []
     };
   },
   computed: {
@@ -27,9 +29,9 @@ export default {
         this.gifs = this.gifs.slice(0);
       }
     },
-    gifs(val) {
+    gifList(val) {
       if (val) {
-        document.getElementById('grid').innerHTML = '';
+        this.filterGifs(val);
         this.layout();
         this.startGifs();
       }
@@ -41,28 +43,16 @@ export default {
         this.masonry.layout();
       }
     },
-    reload() {
-      this.masonry.reloadItems();
-      this.masonry.layout();
+    filterGifs(list) {
+      list.forEach((newGif) => {
+        if (!this.gifs.find(gif => gif.id === newGif.id)) {
+          this.gifs.push(newGif);
+        }
+      });
     },
     bindEvents() {
-      window.addEventListener('scroll', () => {
-        this.offset = window.pageYOffset;
-      });
-      window.addEventListener('resize', () => {
-        this.offset = window.pageYOffset;
-      });
-      this.int = setInterval(() => {
-        const $grid = document.getElementById('grid');
-        if (this.gifs.length === $grid.children.length) {
-          const $wrapH = document.getElementById('wrap').clientHeight - 52 - 33;
-          clearInterval(this.int);
-          if ($grid.clientHeight < $wrapH) {
-            // gif list is shorter than page height, get next page automatically
-            
-          }
-        }
-      }, 1000);
+      const laterLayout = debounce(this.layout, 500);
+      window.addEventListener('resize', laterLayout);
     },
     startMasonry() {
       this.masonry = new Masonry('#grid', {
@@ -97,8 +87,15 @@ export default {
       img.src = gif.images.downsized.url;
     },
     renderGif(parent) {
-      document.getElementById('grid').appendChild(parent);
-      this.masonry.appended([parent]);
+      if (!document.getElementById(parent.id)) {
+        document.getElementById('grid').appendChild(parent);
+        this.masonry.appended([parent]);
+      }
+    }
+  },
+  created() {
+    if (this.gifList && this.gifList.length > 0 && this.gifs.length === 0) {
+      this.filterGifs(this.gifList);
     }
   },
   mounted() {
@@ -113,7 +110,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="scss" scoped>
+<style lang="scss">
 .gif {
   cursor: pointer;
   position: relative;

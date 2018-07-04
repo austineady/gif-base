@@ -28,6 +28,7 @@ module.exports = {
     'prefer-template': 0,
     'no-unused-vars': 0,
     'comma-dangle': 0,
+    'no-trailing-spaces': 0,
     // don't require .vue extension when importing
     'import/extensions': ['error', 'always', {
       'js': 'never',
