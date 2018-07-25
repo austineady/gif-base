@@ -1,6 +1,6 @@
 <template>
   <main style="position: relative;">
-    <Nav
+    <TopNav
       v-on:search="val => search = val"
       v-on:trending-click="trendingClick"
       v-on:stickers-click="stickersClick"
@@ -55,7 +55,7 @@
 </template>
 
 <script>
-import Nav from './Nav';
+import TopNav from './TopNav';
 import Grid from './Grid';
 import History from './History';
 import cache from '../cache';
@@ -128,6 +128,12 @@ export default {
         clearTimeout(this.timeOut);
       }
       this.timeOut = setTimeout(() => {
+        window.ga('send', {
+          hitType: 'event',
+          eventCategory: 'searchKeyWords',
+          eventAction: this.search,
+          eventLabel: 'userSearch'
+        });
         this.query = this.search.replace(' ', '+');
       }, 1000);
     },
@@ -269,7 +275,7 @@ export default {
   components: {
     grid: Grid,
     history: History,
-    Nav,
+    TopNav,
   },
 };
 </script>

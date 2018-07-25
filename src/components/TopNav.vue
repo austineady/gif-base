@@ -44,7 +44,7 @@
 
 <script>
 export default {
-  name: 'Nav',
+  name: 'TopNav',
   data() {
     return {
       category: 'gifs',

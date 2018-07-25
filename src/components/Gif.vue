@@ -51,13 +51,13 @@ export default {
     },
   },
   created() {
-    this.imageSrc = this.gif.images.fixed_width_still.url;
+    this.imageSrc = this.gif.images.downsized.url;
     this.image.onload = () => {
       this.imageSrc = this.image.src;
       this.playing = true;
       this.$emit('reload');
     };
-    this.image.src = this.gif.images.fixed_width.url;
+    this.image.src = this.gif.images.downsized.url;
   },
 };
 </script>
