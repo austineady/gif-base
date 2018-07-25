@@ -131,8 +131,8 @@ export default {
         window.ga('send', {
           hitType: 'event',
           eventCategory: 'searchKeyWords',
-          eventAction: this.search,
-          eventLabel: 'userSearch'
+          eventAction: 'userSearch',
+          eventLabel: this.search
         });
         this.query = this.search.replace(' ', '+');
       }, 1000);
