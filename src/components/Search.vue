@@ -30,17 +30,12 @@
         </div>
       </section>
 
-      <div class="grid-container">
-        <Grid
-          v-if="gifs && gifs.length > 0"
-          :gif-list="gifs"
-          :theme="theme"
-          :clear="clearGifs"
-        />
-      </div>
-    </div>
-
-    <div class="main__bottom">
+      <Grid
+        v-if="gifs && gifs.length > 0"
+        :gif-list="gifs"
+        :theme="theme"
+        :clear="clearGifs"
+      />
       <div class="container h-center">
         <a class="button" :disabled="offset < limit" @click="getPreviousPage">Previous Page</a>
         <a class="button" @click="getNextPage">Next Page</a>
@@ -52,13 +47,13 @@
           <p class="scroll-to-top__text">TOP</p>
         </div>
       </transition>
-
-      <footer class="footer">
-        <div class="container has-text-right">
-          Powered by <a href="https://giphy.com">Giphy</a>
-        </div>
-      </footer>
     </div>
+
+    <footer class="footer">
+      <div class="container has-text-right">
+        Powered by <a href="https://giphy.com">Giphy</a>
+      </div>
+    </footer>
   </main>
 </template>
 
@@ -77,6 +72,8 @@ export default {
     return {
       search: '',
       gifs: [],
+      url: '',
+      hash: '',
       category: 'gifs',
       endpoint: 'trending',
       limit: 25,
@@ -97,15 +94,17 @@ export default {
     },
     page() {
       return Math.round(this.offset / this.limit);
-    },
-    urlEndpoint() {
-      return this.query === '' ? 'trending?' : `search?q=${this.query}&`;
-    },
-    url() {
-      return `https://api.giphy.com/v1/${this.category}/${this.urlEndpoint}limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=dc6zaTOxFJmzC`;
     }
   },
   methods: {
+    buildUrl() {
+      if (this.query !== '') {
+        this.url = `https://api.giphy.com/v1/${this.category}/search?q=${this.query}&limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=dc6zaTOxFJmzC`;
+      } else {
+        this.search = '';
+        this.url = `https://api.giphy.com/v1/${this.category}/trending?limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=dc6zaTOxFJmzC`;
+      }
+    },
     handleUserSearch(val) {
       if (val.length > 0) {
         if (val.match(/[+]/) !== null) {
@@ -116,9 +115,9 @@ export default {
       }
       this.delayedSearch();
     },
-    async fetchData() {
+    async fetchData(url) {
       try {
-        const res = await ajax.get(this.url);
+        const res = await ajax.get(url);
         this.gifs = res.data.filter(gif => !document.getElementById(gif.id));
       } catch (e) {
         console.error(e);
@@ -139,7 +138,6 @@ export default {
       this.timeOut = setTimeout(() => {
         if (this.search === '') {
           this.$router.push({ path: '/' });
-          this.fetchData();
         } else {
           if (this.search && this.search.length > 0) {
             window.ga('send', {
@@ -152,13 +150,17 @@ export default {
           if (this.endpoint !== 'search') this.endpoint = 'search';
           this.$router.push({ path: 'search', query: { q: this.query } });
         }
-        this.fetchData();
+        this.handlePage();
       }, 1500);
+    },
+    resetSearch() {
+      this.offset = 0;
+      this.limit = 25;
     },
     handlePage() {
       if (this.$route.query !== undefined) {
         if (this.$route.query.q !== undefined) {
-          this.search = this.$route.query.q.replace('+', ' ');
+          this.search = this.$route.query.q;
         }
 
         if (this.$route.query.page !== undefined) {
@@ -167,7 +169,8 @@ export default {
           this.offset = 0;
         }
       }
-      this.fetchData();
+      this.buildUrl();
+      this.fetchData(this.url);
     },
     formatRoute() {
       if (this.search !== '') {
@@ -179,7 +182,7 @@ export default {
         this.$router.push({ path: this.endpoint, query: { q: this.query, page: this.page } });
       } else if (this.page > 0 && this.query === '') {
         this.$router.push({ path: this.endpoint, query: { page: this.page } });
-      } else if (this.page === 0 && this.query !== '') {
+      } else if (this.page <= 0 && this.query !== '') {
         this.$router.push({ path: this.endpoint, query: { q: this.query } });
       } else {
         this.$router.push({ path: this.endpoint });
@@ -190,7 +193,7 @@ export default {
       this.offset = 0;
       this.search = '';
       this.endpoint = 'trending';
-      this.$router.push('/');
+      this.$router.push({ path: 'trending' });
     },
     stickersClick() {
       this.offset = 0;
@@ -201,6 +204,13 @@ export default {
       this.offset = 0;
       this.category = 'gifs';
       this.handlePage();
+    },
+    resetPage() {
+      this.offset = 0;
+    },
+    buildAndReset() {
+      this.buildUrl();
+      this.resetPage();
     },
     scrollToTop() {
       window.scroll({ top: 0, left: 0, behavior: 'smooth' });
@@ -233,12 +243,6 @@ export default {
     }
   }
 
-  .grid-container {
-    height: calc(100vh - 230px);
-    overflow-x: hidden;
-    overflow-y: scroll;
-  }
-
   .section {
     position: relative;
   }
@@ -268,7 +272,10 @@ export default {
   }
 
   footer.footer {
+    bottom: 0;
+    left: 0;
     padding: 0.3rem 1rem;
-    margin-top: 15px;
+    position: absolute;
+    right: 0;
   }
 </style>
