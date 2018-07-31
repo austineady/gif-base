@@ -1,5 +1,5 @@
 <template>
-  <div id="grid"></div>
+  <div id="grid" class="grid-box"></div>
 </template>
 
 <script>
@@ -9,17 +9,18 @@ import debounce from '../debounce';
 
 export default {
   name: 'grid',
-  props: ['gifList', 'short', 'theme', 'clear'],
+  props: ['gifList', 'clear'],
   data() {
     return {
       offset: 0,
       backToTop: false,
-      gifs: []
+      gifs: [],
+      timeout: null
     };
   },
   computed: {
     width() {
-      return 250;
+      return 200;
     }
   },
   watch: {
@@ -51,10 +52,6 @@ export default {
         }
       });
     },
-    bindEvents() {
-      const laterLayout = debounce(this.layout, 500);
-      window.addEventListener('resize', laterLayout);
-    },
     startMasonry() {
       this.masonry = new Masonry('#grid', {
         itemSelector: '.gif',
@@ -66,7 +63,6 @@ export default {
     startGifs() {
       this.gifs.forEach(this.loadGif);
       const clipboard = new Clipboard('.gif');
-      this.bindEvents();
     },
     loadGif(gif) {
       const parent = document.createElement('div');
@@ -85,7 +81,7 @@ export default {
       img.onload = () => {
         this.renderGif(parent);
       };
-      img.src = gif.images.downsized.url;
+      img.src = gif.images.fixed_width.url;
     },
     renderGif(parent) {
       if (!document.getElementById(parent.id)) {
@@ -103,6 +99,14 @@ export default {
     if (document.getElementById('grid') && !this.masonry) {
       this.startMasonry();
     }
+    window.addEventListener('resize', () => {
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+      }
+      this.timeout = setTimeout(() => {
+        this.layout();
+      }, 500);
+    });
   },
   updated() {
     if (this.$el && !this.masonry) this.startMasonry();
@@ -112,6 +116,12 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+.grid-box {
+  max-width: 1025px;
+  min-width: 400px;
+  margin: 0 auto;
+}
+
 .gif {
   cursor: pointer;
   position: relative;

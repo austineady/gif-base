@@ -8,12 +8,17 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: Main,
+      component: Main
     },
     {
       path: '/:endpoint',
       component: Main,
-      props: true,
+      props: true
     },
-  ],
+    {
+      path: '/:category/:endpoint',
+      component: Main,
+      props: true
+    }
+  ]
 });

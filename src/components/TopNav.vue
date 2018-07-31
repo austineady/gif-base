@@ -1,6 +1,6 @@
 <template>
   <section class="container main__nav">
-    <nav class="navbar main__navbar">
+    <nav class="navbar main__navbar texture-background" :class="{ 'is-active': menuActive }">
       <div class="navbar-brand is-hidden-touch">
         <div class="navbar-item">
           <span class="font-secondary">GifBase</span>
@@ -10,29 +10,22 @@
       <div id="main-menu" class="navbar-menu" :class="{ 'is-active': menuActive }">
         <div class="navbar-start"></div>
         <div class="navbar-end">
-          <div class="navbar-item">
-            <a class="navbar-item" v-show="category === 'stickers'" @click="gifsClick">Gifs</a>
-          </div>
-          <div class="navbar-item">
-            <a class="navbar-item" v-show="category === 'gifs'" @click="stickersClick">Stickers</a>
-          </div>
-          <div class="navbar-item">
-            <a class="navbar-item" v-show="isSearching" @click="trendingClick">Trending</a>
-          </div>
-          <!-- <div class="navbar-item">
-            <a class="navbar-item" v-if="isOnMobile" @click="settingsActive = !settingsActive">
-              <span class="icon">
-                <i class="fa fa-cog"></i>
-              </span>
-            </a>
-          </div> -->
+          <a v-if="$route.path.includes('stickers')" @click="handleCategoryChange('')" class="navbar-item">
+            Gifs
+          </a>
+          <a v-if="!$route.path.includes('stickers')" @click="handleCategoryChange('/stickers')" class="navbar-item">
+            Stickers
+          </a>
+          <a v-show="isSearching" @click="$router.push({ path: '/' })" class="navbar-item">
+            Trending
+          </a>
         </div>
       </div>
     </nav>
     <div class="level main__search">
       <div class="level-item is-flex">
         <input class="input main__search-input" id="search" type="text" @input="handleSearch($event.target.value)" name="search" :placeholder="isOnMobile ? 'Search gifs' : 'Type in keywords to search'" autofocus>
-        <div class="navbar-burger burger main__search-menu-toggle is-hidden-desktop" :class="{ 'is-active': menuActive }" data-target="main-menu" @click="menuActive = !menuActive">
+        <div class="navbar-burger burger main__search-menu-toggle is-hidden-desktop" :class="{ 'is-active': menuActive }" data-target="main-menu" @click="handleMenuToggle">
           <span></span>
           <span></span>
           <span></span>
@@ -64,15 +57,20 @@ export default {
     handleSearch(val) {
       this.$emit('search', val);
     },
-    gifsClick() {
-      this.$emit('gif-click');
-    },
-    stickersClick() {
-      this.$emit('stickers-click');
-    },
     trendingClick() {
       this.$emit('trending-click');
     },
+    handleCategoryChange(category) {
+      if (this.$route.query.q !== undefined && this.$route.query.q.length > 0) {
+        this.$router.push({ path: `${category}/search`, query: { q: this.$route.query.q } });
+      } else {
+        this.$router.push({ path: `${category}` });
+      }
+    },
+    handleMenuToggle() {
+      this.menuActive = !this.menuActive;
+      this.$emit('menu-toggle', this.menuActive);
+    }
   },
 };
 </script>
@@ -90,23 +88,15 @@ export default {
     padding-bottom: 15px;
     position: relative;
     z-index: 10;
-    
-    @media screen and (max-width: 1007px) {
-      background-color: white;
-      box-shadow: 0 3px 2px rgba(10, 10, 10, .1), 0 0 0 1px rgba(10, 10, 10, .1);
-      display: block;
-      left: 0;
-      min-height: 52px;
-      padding-bottom: 0;
-      position: fixed;
-      right: 0;
-      top: 0;
-    }
   }
 
   &__navbar {
-    @media screen and (max-width: 1007px) {
-      padding-top: 52px;
+    @media screen and (max-width: 1023px) {
+      min-height: 0;
+
+      &.is-active {
+        min-height: 3.25rem;
+      }
     }
   }
   &__search {
@@ -142,5 +132,12 @@ export default {
 .navbar-menu {
   justify-content: center;
   align-items: center;
+
+  @media screen and (max-width: 1007px) {
+    &.is-active {
+      position: relative;
+      top: 52px;
+    }
+  }
 }
 </style>
