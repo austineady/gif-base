@@ -61,6 +61,7 @@
 import TopNav from './TopNav';
 import Grid from './Grid';
 import ajax from '../ajax';
+import config from '../config';
 
 export default {
   name: 'Main',
@@ -70,6 +71,7 @@ export default {
   },
   data() {
     return {
+      apiKey: config.apiKey,
       search: '',
       gifs: [],
       url: '',
@@ -90,7 +92,7 @@ export default {
   },
   computed: {
     query() {
-      return this.search.length > 0 ? this.search.replace(' ', '+') : '';
+      return this.search.length > 0 ? this.search.replace(' ', '-') : '';
     },
     page() {
       return Math.round(this.offset / this.limit);
@@ -99,16 +101,16 @@ export default {
   methods: {
     buildUrl() {
       if (this.query !== '') {
-        this.url = `https://api.giphy.com/v1/${this.category}/search?q=${this.query}&limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=dc6zaTOxFJmzC`;
+        this.url = `https://api.giphy.com/v1/${this.category}/search?q=${this.query}&limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=${this.apiKey}`;
       } else {
         this.search = '';
-        this.url = `https://api.giphy.com/v1/${this.category}/trending?limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=dc6zaTOxFJmzC`;
+        this.url = `https://api.giphy.com/v1/${this.category}/trending?limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=${this.apiKey}`;
       }
     },
     handleUserSearch(val) {
       if (val.length > 0) {
-        if (val.match(/[+]/) !== null) {
-          this.search = val.replace('+', ' ');
+        if (val.match(/[-]/) !== null) {
+          this.search = val.replace('-', ' ');
         } else {
           this.search = val;
         }

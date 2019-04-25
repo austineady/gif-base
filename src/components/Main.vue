@@ -42,6 +42,7 @@
 import TopNav from './TopNav';
 import Grid from './Grid';
 import ajax from '../ajax';
+import config from '../config';
 
 export default {
   name: 'Main',
@@ -51,6 +52,7 @@ export default {
   },
   data() {
     return {
+      apiKey: config.apiKey,
       search: '',
       gifs: [],
       category: 'gifs',
@@ -66,7 +68,7 @@ export default {
   },
   computed: {
     query() {
-      return this.search.length > 0 ? this.search.replace(' ', '+') : '';
+      return this.search.length > 0 ? this.search.replace(' ', '-') : '';
     },
     page() {
       return Math.round(this.offset / this.limit);
@@ -75,7 +77,7 @@ export default {
       return this.query === '' ? 'trending?' : `search?q=${this.query}&`;
     },
     url() {
-      return `https://api.giphy.com/v1/${this.category}/${this.urlEndpoint}limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=dc6zaTOxFJmzC`;
+      return `https://api.giphy.com/v1/${this.category}/${this.urlEndpoint}limit=${this.limit}&offset=${this.offset}${this.nsfw ? '' : '&rating=pg'}&api_key=${this.apiKey}`;
     }
   },
   watch: {
@@ -107,8 +109,8 @@ export default {
     },
     handleUserSearch(val) {
       if (val.length > 0) {
-        if (val.match(/[+]/) !== null) {
-          this.search = val.replace('+', ' ');
+        if (val.match(/[-]/) !== null) {
+          this.search = val.replace('-', ' ');
         } else {
           this.search = val;
         }
