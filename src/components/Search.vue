@@ -92,7 +92,7 @@ export default {
   },
   computed: {
     query() {
-      return this.search.length > 0 ? this.search.replace(' ', '-') : '';
+      return this.search.length > 0 ? this.search.replace(/\s+/g, '-') : '';
     },
     page() {
       return Math.round(this.offset / this.limit);
@@ -110,7 +110,7 @@ export default {
     handleUserSearch(val) {
       if (val.length > 0) {
         if (val.match(/[-]/) !== null) {
-          this.search = val.replace('-', ' ');
+          this.search = val.replace(/-/g, ' ');
         } else {
           this.search = val;
         }
